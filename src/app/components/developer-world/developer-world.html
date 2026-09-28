@@ -1,0 +1,940 @@
+<main class="developer-world-root">
+
+  <!-- ========================================== -->
+  <!-- 1. 3D WEBGL CANVAS                         -->
+  <!-- ========================================== -->
+  @if (isWebGLAvailable()) {
+    <canvas
+      #sceneCanvas
+      class="scene-canvas"
+      aria-label="Interactive 3D developer workspace and digital laboratory">
+    </canvas>
+  }
+
+  <!-- ========================================== -->
+  <!-- 2. WEBGL GRACEFUL ACCESSIBLE FALLBACK      -->
+  <!-- ========================================== -->
+  @if (!isWebGLAvailable()) {
+    <section class="webgl-fallback-container" aria-label="Accessible portfolio view">
+      <header class="fallback-header">
+        <span class="status-badge">SYSTEM ONLINE // ACCESSIBLE HTML MODE</span>
+        <h1>{{ profile.name }}</h1>
+        <h2>{{ profile.role }} &bull; {{ profile.experienceYears }} Experience</h2>
+        <p class="tagline">{{ profile.tagline }}</p>
+        <p class="summary">{{ profile.summary }}</p>
+
+        <div class="fallback-actions">
+          <button type="button" class="btn primary" (click)="openRecruiterMode()">
+            ★ OPEN RECRUITER SUMMARY
+          </button>
+          <a [href]="profile.github" target="_blank" rel="noopener noreferrer" class="btn secondary">
+            VIEW GITHUB PROFILE
+          </a>
+          <a [href]="profile.linkedin" target="_blank" rel="noopener noreferrer" class="btn secondary">
+            CONNECT ON LINKEDIN
+          </a>
+          <button type="button" class="btn outline" (click)="copyEmail()">
+            COPY EMAIL
+          </button>
+        </div>
+      </header>
+
+      <!-- Primary Stack -->
+      <section class="fallback-section">
+        <h3>PRIMARY CORE STACK</h3>
+        <div class="tech-pills">
+          @for (tech of profile.primaryStack; track tech) {
+            <span class="pill core">{{ tech }}</span>
+          }
+          @for (tech of profile.additionalStack; track tech) {
+            <span class="pill">{{ tech }}</span>
+          }
+        </div>
+      </section>
+
+      <!-- Featured Projects -->
+      <section class="fallback-section">
+        <h3>FEATURED PRODUCTION & ENGINEERING PROJECTS</h3>
+        <div class="fallback-projects-grid">
+          @for (proj of projects; track proj.id) {
+            <article class="project-card">
+              <div class="card-header">
+                <span class="cat">{{ proj.category }}</span>
+                <span class="status">[{{ proj.status }}]</span>
+              </div>
+              <h4>{{ proj.title }}</h4>
+              <p class="desc">{{ proj.description }}</p>
+              <p class="role"><strong>Role:</strong> {{ proj.role }}</p>
+              <div class="tech-tags">
+                @for (t of proj.technologies; track t) {
+                  <span>{{ t }}</span>
+                }
+              </div>
+              <div class="card-footer">
+                @if (proj.githubUrl) {
+                  <a [href]="proj.githubUrl" target="_blank" rel="noopener noreferrer" class="link-btn">
+                    GitHub &rarr;
+                  </a>
+                }
+                @if (proj.liveUrl) {
+                  <a [href]="proj.liveUrl" target="_blank" rel="noopener noreferrer" class="link-btn accent">
+                    Live Demo &rarr;
+                  </a>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      </section>
+
+      <!-- Experience -->
+      <section class="fallback-section">
+        <h3>PROFESSIONAL EXPERIENCE</h3>
+        <div class="fallback-timeline">
+          @for (exp of experience; track exp.period) {
+            <div class="timeline-entry">
+              <span class="period">{{ exp.period }}</span>
+              <h4>{{ exp.role }} &bull; {{ exp.companyOrContext }}</h4>
+              <p>{{ exp.summary }}</p>
+              <ul>
+                @for (h of exp.highlights; track h) {
+                  <li>{{ h }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      </section>
+    </section>
+  }
+
+  <!-- ========================================== -->
+  <!-- 3. CINEMATIC INTRO SEQUENCE                -->
+  <!-- ========================================== -->
+  @if (isWebGLAvailable() && introPhase() !== 'entered') {
+    <div class="intro-overlay" [ngClass]="'step-' + introStep()">
+      <div class="intro-backdrop" [class.transparent]="introStep() !== 'black' && introStep() !== 'init' && introStep() !== 'particles'"></div>
+
+      <!-- Skip intro button always accessible -->
+      <button type="button" class="btn-skip-intro" (click)="skipIntro()" title="Skip Cinematic Intro">
+        SKIP INTRO &rarr;
+      </button>
+
+      <div class="intro-content">
+        <!-- 1. INITIALIZING... & particles slowly appear -->
+        @if (introStep() === 'init' || introStep() === 'particles') {
+          <div class="step-init-box">
+            <span class="init-label">&gt; INITIALIZING...</span>
+            <span class="init-sub" [class.visible]="introStep() === 'particles'">[ SYSTEM STATUS: ACTIVATING &bull; PARTICLES ONLINE ]</span>
+          </div>
+        }
+
+        <!-- 2. SYSTEM STATUS ONLINE -->
+        @if (introStep() !== 'black' && introStep() !== 'init' && introStep() !== 'particles') {
+          <div class="status-pill-badge">
+            <span class="pulse-beacon"></span>
+            <span class="status-text">SYSTEM ONLINE</span>
+          </div>
+        }
+
+        <!-- 3. Angular / ASP.NET Core / SQL Server / Azure visual appears -->
+        @if (introStep() === 'stack' || introStep() === 'name' || introStep() === 'role' || introStep() === 'quote' || introStep() === 'ready') {
+          <div class="intro-stack-visual">
+            <span class="stack-item angular">ANGULAR</span>
+            <span class="stack-separator">&bull;</span>
+            <span class="stack-item dotnet">ASP.NET CORE</span>
+            <span class="stack-separator">&bull;</span>
+            <span class="stack-item sql">SQL SERVER</span>
+            <span class="stack-separator">&bull;</span>
+            <span class="stack-item azure">AZURE</span>
+          </div>
+        }
+
+        <!-- 4. RISHU KATIYAR appears -->
+        @if (introStep() === 'name' || introStep() === 'role' || introStep() === 'quote' || introStep() === 'ready') {
+          <div class="intro-hero-title">
+            <h1 class="intro-name">
+              RISHU<br />
+              <span class="stroke-text">KATIYAR</span>
+            </h1>
+          </div>
+        }
+
+        <!-- 5. FULL STACK DEVELOPER appears -->
+        @if (introStep() === 'role' || introStep() === 'quote' || introStep() === 'ready') {
+          <p class="intro-role-eyebrow">FULL STACK DEVELOPER</p>
+        }
+
+        <!-- 6. "I BUILD DIGITAL SYSTEMS." -->
+        @if (introStep() === 'quote' || introStep() === 'ready') {
+          <p class="intro-quote-line">
+            "I BUILD DIGITAL SYSTEMS."
+          </p>
+        }
+
+        <!-- 6. ENTER WORKSPACE button -->
+        @if (introStep() === 'ready') {
+          <div class="intro-enter-container">
+            <button type="button" class="btn-enter-workspace" (click)="enterWorkspace()">
+              <span class="enter-glow"></span>
+              [ ENTER WORKSPACE ]
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 4. TOP HUD & CONTROLS                      -->
+  <!-- ========================================== -->
+  @if (introPhase() === 'entered') {
+    <header class="hud-top">
+      <div class="hud-left">
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span class="status-title">
+            <span class="hud-full-text">RISHU.OS // ONLINE</span>
+            <span class="hud-mobile-text">RISHU.OS</span>
+          </span>
+        </div>
+
+        <div class="current-world-badge hud-desktop-only">
+          <span class="world-num">[{{ currentWorldMeta().number }}/10]</span>
+          <span class="world-name">{{ currentWorldMeta().label }}</span>
+        </div>
+
+        @if (currentWorldId() !== 'workspace') {
+          <button
+            type="button"
+            class="btn-back-workspace"
+            (click)="backToWorkspace()"
+            title="Return to Central Developer Workstation">
+            <span class="hud-full-text">&larr; BACK TO WORKSPACE</span>
+            <span class="hud-mobile-text">&larr; BACK</span>
+          </button>
+        }
+      </div>
+
+      <div class="hud-right">
+        <!-- Recruiter Mode CTA -->
+        <button
+          type="button"
+          class="btn-recruiter"
+          (click)="openRecruiterMode()"
+          title="Instant 30-Second Candidate Summary">
+          <span class="star-icon">★</span>
+          <span class="recruiter-label">
+            <span class="hud-full-text">RECRUITER MODE</span>
+            <span class="hud-mobile-text">RECRUITER</span>
+          </span>
+        </button>
+
+        <!-- Terminal Launcher -->
+        <button
+          type="button"
+          class="hud-icon-btn"
+          (click)="openTerminal()"
+          title="Open Developer Terminal (T)">
+          <span class="btn-icon">&gt;_</span>
+          <span class="hud-btn-text">CLI</span>
+        </button>
+
+        <!-- Audio Toggle -->
+        <button
+          type="button"
+          class="hud-icon-btn"
+          (click)="toggleAudio()"
+          [title]="isMuted() ? 'Enable Sound (M)' : 'Mute Sound (M)'">
+          <span class="btn-icon">{{ isMuted() ? '🔇' : '🔊' }}</span>
+        </button>
+
+        <!-- Quality Selector (Desktop) -->
+        <div class="quality-dropdown-wrapper hud-desktop-only">
+          <button
+            type="button"
+            class="hud-icon-btn quality-btn"
+            (click)="toggleQualityMenu()"
+            title="Adjust 3D Rendering Quality">
+            <span class="btn-icon">⚡</span>
+            <span class="hud-btn-text">{{ currentQuality() | uppercase }}</span>
+          </button>
+
+          @if (qualityMenuOpen()) {
+            <div class="quality-dropdown">
+              <button type="button" (click)="setQuality('auto')" [class.active]="currentQuality() === 'auto'">
+                AUTO (Adaptive)
+              </button>
+              <button type="button" (click)="setQuality('high')" [class.active]="currentQuality() === 'high'">
+                HIGH (Full Shaders)
+              </button>
+              <button type="button" (click)="setQuality('medium')" [class.active]="currentQuality() === 'medium'">
+                MEDIUM (Balanced)
+              </button>
+              <button type="button" (click)="setQuality('low')" [class.active]="currentQuality() === 'low'">
+                LOW (Power Saver)
+              </button>
+            </div>
+          }
+        </div>
+
+        <!-- Direct Resume Action (Desktop) -->
+        <a
+          href="https://github.com/rishukatiyar001"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-resume-hud hud-desktop-only"
+          title="View GitHub & Projects">
+          RESUME / GITHUB
+        </a>
+      </div>
+    </header>
+
+    <!-- Interactive Hover Tooltip in 3D -->
+    @if (hoveredObject(); as obj) {
+      <div class="hover-tooltip" [style.border-color]="obj.accentColor || '#00eaff'">
+        <div class="tooltip-badge">CLICK TO INSPECT</div>
+        <div class="tooltip-label">{{ obj.label }}</div>
+        @if (obj.description) {
+          <div class="tooltip-desc">{{ obj.description }}</div>
+        }
+      </div>
+    }
+
+    <!-- ========================================== -->
+    <!-- 5. BOTTOM NAVIGATION DOCK & CONTROLS       -->
+    <!-- ========================================== -->
+    <nav class="hud-bottom" aria-label="3D World Navigation">
+      <button
+        type="button"
+        class="nav-arrow-btn"
+        (click)="prevWorld()"
+        title="Previous World (Left Arrow)">
+        &lsaquo; PREV
+      </button>
+
+      <!-- Desktop pills horizontal strip -->
+      <div class="world-pills-scroll desktop-pills">
+        @for (w of worlds; track w.id) {
+          <button
+            type="button"
+            class="world-pill"
+            [class.active]="currentWorldId() === w.id"
+            (click)="navigateToWorld(w.id)">
+            <span class="pill-number">{{ w.number }}</span>
+            <span class="pill-label">{{ w.label }}</span>
+          </button>
+        }
+      </div>
+
+      <!-- Mobile quick world indicator & picker chip -->
+      <button
+        type="button"
+        class="mobile-world-chip"
+        (click)="openWorldPicker()"
+        title="Tap to select 3D world">
+        <span class="chip-counter">[{{ currentWorldMeta().number }}/10]</span>
+        <span class="chip-name">{{ currentWorldMeta().label }}</span>
+        <span class="chip-arrow">&blacktriangledown;</span>
+      </button>
+
+      <button
+        type="button"
+        class="nav-arrow-btn"
+        (click)="nextWorld()"
+        title="Next World (Right Arrow)">
+        NEXT &rsaquo;
+      </button>
+    </nav>
+
+    <!-- Mobile World Selector Bottom Sheet -->
+    @if (mobileWorldDrawerOpen()) {
+      <div class="modal-backdrop" (click)="closeWorldPicker()">
+        <div class="mobile-worlds-sheet" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Select 3D World">
+          <div class="sheet-grabber"></div>
+          <header class="sheet-header">
+            <div>
+              <span class="sheet-badge">DIGITAL UNIVERSE // SELECT WORLD</span>
+              <h3>EXPLORE 3D WORLDS</h3>
+            </div>
+            <button type="button" class="btn-close" (click)="closeWorldPicker()" aria-label="Close">&times;</button>
+          </header>
+
+          <div class="mobile-worlds-list">
+            @for (w of worlds; track w.id) {
+              <button
+                type="button"
+                class="mobile-world-btn"
+                [class.active]="currentWorldId() === w.id"
+                (click)="navigateToWorld(w.id); closeWorldPicker()">
+                <span class="m-num">{{ w.number }}</span>
+                <div class="m-info">
+                  <span class="m-title">{{ w.label }}</span>
+                  <span class="m-desc">{{ w.description }}</span>
+                </div>
+                @if (currentWorldId() === w.id) {
+                  <span class="m-active-tag">CURRENT</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- ========================================== -->
+  <!-- 6. RECRUITER MODE MODAL (30s FAST SCAN)    -->
+  <!-- ========================================== -->
+  @if (recruiterModeOpen()) {
+    <div class="modal-backdrop" (click)="closeRecruiterMode()">
+      <div class="recruiter-drawer" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Recruiter Summary">
+        <header class="drawer-header">
+          <div class="header-left">
+            <span class="badge-recruiter">★ EXECUTIVE RECRUITER MODE &bull; 30-SECOND SCAN</span>
+            <h2>{{ profile.name }}</h2>
+            <p class="role-exp">{{ profile.role }} &bull; {{ profile.experienceYears }} Production Experience</p>
+          </div>
+          <button type="button" class="btn-close" (click)="closeRecruiterMode()" aria-label="Close Recruiter Mode">
+            &times;
+          </button>
+        </header>
+
+        <div class="drawer-body">
+          <!-- Quick Contact Actions -->
+          <div class="recruiter-quick-actions">
+            <button type="button" class="btn-action primary" (click)="copyEmail()">
+              📋 COPY EMAIL ({{ profile.email }})
+            </button>
+            <a [href]="profile.github" target="_blank" rel="noopener noreferrer" class="btn-action secondary">
+              🐙 GITHUB PROFILE &rarr;
+            </a>
+            <a [href]="profile.linkedin" target="_blank" rel="noopener noreferrer" class="btn-action secondary">
+              💼 LINKEDIN PROFILE &rarr;
+            </a>
+            <button type="button" class="btn-action outline" (click)="openContactModal()">
+              ✉️ SEND MESSAGE
+            </button>
+          </div>
+
+          <!-- Executive Summary -->
+          <section class="drawer-section">
+            <h3>EXECUTIVE SUMMARY</h3>
+            <p class="summary-text">{{ profile.summary }}</p>
+          </section>
+
+          <!-- Core Stack Badges -->
+          <section class="drawer-section">
+            <h3>PRIMARY CORE PROFICIENCY</h3>
+            <div class="badge-cloud">
+              @for (skill of profile.primaryStack; track skill) {
+                <span class="badge primary-tech">{{ skill }}</span>
+              }
+              @for (skill of profile.additionalStack; track skill) {
+                <span class="badge additional-tech">{{ skill }}</span>
+              }
+            </div>
+          </section>
+
+          <!-- Key Highlights -->
+          <section class="drawer-section">
+            <h3>KEY ARCHITECTURAL DELIVERABLES</h3>
+            <div class="highlights-grid">
+              <div class="highlight-item">
+                <span class="hl-icon">⚡</span>
+                <div class="hl-content">
+                  <h4>Smart Grid ERP & Meter Billing</h4>
+                  <p>Enterprise smart electricity meter telemetry ingest, automated tariff computation using high-speed Dapper stored procedures, and customer recharge portals.</p>
+                </div>
+              </div>
+              <div class="highlight-item">
+                <span class="hl-icon">🛡️</span>
+                <div class="hl-content">
+                  <h4>ICICI Bank Payment Gateway</h4>
+                  <p>Production cryptographic integration featuring HMAC SHA256 signature generation, idempotent webhook processing, and Android/iOS Capacitor deep-linking.</p>
+                </div>
+              </div>
+              <div class="highlight-item">
+                <span class="hl-icon">📱</span>
+                <div class="hl-content">
+                  <h4>Cross-Platform Mobile Engineering</h4>
+                  <p>Ionic & Capacitor native deployment across Android & iOS, integrating hardware camera scanning, SQLite encrypted offline caching, and Firebase push alerts.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Projects Quick List -->
+          <section class="drawer-section">
+            <h3>VERIFIED PRODUCTION & ENGINEERING PROJECTS</h3>
+            <div class="recruiter-projects-table">
+              @for (proj of projects; track proj.id) {
+                <div class="table-row">
+                  <div class="col-title">
+                    <strong>{{ proj.title }}</strong>
+                    <span class="category-sub">{{ proj.category }}</span>
+                  </div>
+                  <div class="col-tech">
+                    {{ proj.technologies.slice(0, 4).join(', ') }}
+                  </div>
+                  <div class="col-status">
+                    <span class="status-pill">{{ proj.status }}</span>
+                  </div>
+                  <div class="col-link">
+                    @if (proj.githubUrl) {
+                      <a [href]="proj.githubUrl" target="_blank" rel="noopener noreferrer" class="link-text">
+                        GitHub &rarr;
+                      </a>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+        </div>
+
+        <footer class="drawer-footer">
+          <span class="footer-note">Website: rishukatiyar.pp.ua &bull; Open for High-Impact Software Engineering Roles</span>
+          <button type="button" class="btn primary" (click)="closeRecruiterMode()">
+            RETURN TO 3D EXPLORATION
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 7. ARCHITECTURE NODE DETAIL MODAL          -->
+  <!-- ========================================== -->
+  @if (selectedArchitectureNode(); as node) {
+    <div class="modal-backdrop" (click)="selectedArchitectureNode.set(null)">
+      <div class="cyber-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <header class="modal-header" [style.border-color]="node.color">
+          <div>
+            <span class="modal-tier" [style.color]="node.color">TIER 0{{ node.tier }} // {{ node.category | uppercase }}</span>
+            <h2>{{ node.name }}</h2>
+            <p class="node-tech">{{ node.technology }}</p>
+          </div>
+          <button type="button" class="btn-close" (click)="selectedArchitectureNode.set(null)" aria-label="Close">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <section class="modal-section">
+            <h3>ROLE IN ARCHITECTURE</h3>
+            <p>{{ node.description }}</p>
+          </section>
+
+          <section class="modal-section">
+            <h3>HOW RISHU USES THIS</h3>
+            <p>{{ node.howUsedByRishu }}</p>
+          </section>
+
+          @if (node.codeSnippet) {
+            <section class="modal-section">
+              <h3>PRODUCTION CODE PATTERN</h3>
+              <pre class="code-block"><code>{{ node.codeSnippet }}</code></pre>
+            </section>
+          }
+
+          <div class="flow-pills">
+            <span class="flow-pill">Request Order: #{{ node.requestOrder }} of 7</span>
+            <span class="flow-pill">Response Order: #{{ node.responseOrder }} of 7</span>
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn primary" (click)="selectedArchitectureNode.set(null)">
+            CLOSE INSPECTION
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 7B. ERP & METER BILLING STAGE MODAL        -->
+  <!-- ========================================== -->
+  @if (selectedErpStage(); as stage) {
+    <div class="modal-backdrop" (click)="selectedErpStage.set(null)">
+      <div class="cyber-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <header class="modal-header" [style.border-color]="stage.color">
+          <div>
+            <span class="modal-tier" [style.color]="stage.color">STAGE 0{{ stage.step }} // SMART GRID PIPELINE</span>
+            <h2>{{ stage.name }}</h2>
+            <p class="node-tech">{{ stage.technology }}</p>
+          </div>
+          <button type="button" class="btn-close" (click)="selectedErpStage.set(null)" aria-label="Close">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <section class="modal-section">
+            <h3>FLOW ROLE & RESPONSIBILITY</h3>
+            <p>{{ stage.flowRole }}</p>
+          </section>
+
+          <section class="modal-section">
+            <h3>SYSTEM OVERVIEW</h3>
+            <p>{{ stage.description }}</p>
+          </section>
+
+          <section class="modal-section">
+            <h3>TECHNICAL IMPLEMENTATION HIGHLIGHTS</h3>
+            <ul class="highlights-list">
+              @for (detail of stage.technicalDetails; track detail) {
+                <li>{{ detail }}</li>
+              }
+            </ul>
+          </section>
+
+          @if (stage.codeOrSchema) {
+            <section class="modal-section">
+              <h3>CODE / TELEMETRY CONTRACT</h3>
+              <pre class="code-block"><code>{{ stage.codeOrSchema }}</code></pre>
+            </section>
+          }
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn primary" (click)="selectedErpStage.set(null)">
+            CLOSE STAGE INSPECTION
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 7C. PAYMENT ENGINEERING STAGE MODAL        -->
+  <!-- ========================================== -->
+  @if (selectedPaymentStage(); as payStage) {
+    <div class="modal-backdrop" (click)="selectedPaymentStage.set(null)">
+      <div class="cyber-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <header class="modal-header" [style.border-color]="payStage.color">
+          <div>
+            <span class="modal-tier" [style.color]="payStage.color">STAGE 0{{ payStage.order }} // {{ payStage.stage }}</span>
+            <h2>{{ payStage.name }}</h2>
+            <p class="node-tech">{{ payStage.protocolOrAlgorithm }}</p>
+          </div>
+          <button type="button" class="btn-close" (click)="selectedPaymentStage.set(null)" aria-label="Close">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <section class="modal-section">
+            <h3>TECHNICAL ROLE IN SETTLEMENT</h3>
+            <p>{{ payStage.technicalRole }}</p>
+          </section>
+
+          <section class="modal-section">
+            <h3>WORKFLOW EXPLANATION</h3>
+            <p>{{ payStage.description }}</p>
+          </section>
+
+          <section class="modal-section">
+            <h3>STAGE PARAMETERS & SPECIFICATIONS</h3>
+            <div class="params-table-container">
+              <table class="params-table">
+                <thead>
+                  <tr>
+                    <th>Parameter Key</th>
+                    <th>Value / Spec</th>
+                    <th>Security Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (param of payStage.parameters; track param.key) {
+                    <tr>
+                      <td class="param-key">{{ param.key }}</td>
+                      <td class="param-val"><code>{{ param.value }}</code></td>
+                      <td class="param-note">{{ param.note || 'Standard param' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          @if (payStage.codeExample) {
+            <section class="modal-section">
+              <h3>ENGINEERING IMPLEMENTATION</h3>
+              <pre class="code-block"><code>{{ payStage.codeExample }}</code></pre>
+            </section>
+          }
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn primary" (click)="selectedPaymentStage.set(null)">
+            CLOSE PAYMENT INSPECTION
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 7D. MOBILE ENGINEERING FEATURE MODAL       -->
+  <!-- ========================================== -->
+  @if (selectedMobileFeature(); as feat) {
+    <div class="modal-backdrop" (click)="selectedMobileFeature.set(null)">
+      <div class="cyber-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <header class="modal-header" [style.border-color]="feat.color">
+          <div>
+            <span class="modal-tier" [style.color]="feat.color">{{ feat.category | uppercase }}</span>
+            <h2>{{ feat.name }}</h2>
+            <p class="node-tech">{{ feat.technology }}</p>
+          </div>
+          <button type="button" class="btn-close" (click)="selectedMobileFeature.set(null)" aria-label="Close">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <section class="modal-section">
+            <h3>FEATURE OVERVIEW</h3>
+            <p>{{ feat.description }}</p>
+          </section>
+
+          <section class="modal-section">
+            <h3>NATIVE PLUGIN & RUNTIME INTEGRATION</h3>
+            <p>{{ feat.implementationDetail }}</p>
+          </section>
+
+          @if (feat.codeSnippet) {
+            <section class="modal-section">
+              <h3>PRODUCTION CODE IMPLEMENTATION</h3>
+              <pre class="code-block"><code>{{ feat.codeSnippet }}</code></pre>
+            </section>
+          }
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn primary" (click)="selectedMobileFeature.set(null)">
+            CLOSE FEATURE INSPECTION
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 8. PROJECT DETAIL MODAL                    -->
+  <!-- ========================================== -->
+  @if (selectedProject(); as proj) {
+    <div class="modal-backdrop" (click)="selectedProject.set(null)">
+      <div class="cyber-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <header class="modal-header" [style.border-color]="proj.color">
+          <div>
+            <div class="modal-meta-row">
+              <span class="proj-cat" [style.color]="proj.color">{{ proj.category | uppercase }}</span>
+              <span class="proj-status">[{{ proj.status }}]</span>
+            </div>
+            <h2>{{ proj.title }}</h2>
+            <p class="proj-subtitle">{{ proj.subtitle }}</p>
+          </div>
+          <button type="button" class="btn-close" (click)="selectedProject.set(null)" aria-label="Close">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <section class="modal-section">
+            <h3>PROJECT OVERVIEW</h3>
+            <p>{{ proj.description }}</p>
+          </section>
+
+          <section class="modal-section">
+            <h3>RISHU'S ENGINEERING ROLE</h3>
+            <p>{{ proj.role }}</p>
+          </section>
+
+          <section class="modal-section">
+            <h3>ARCHITECTURAL HIGHLIGHTS</h3>
+            <ul class="highlights-list">
+              @for (h of proj.architectureHighlights; track h) {
+                <li>{{ h }}</li>
+              }
+            </ul>
+          </section>
+
+          <section class="modal-section">
+            <h3>TECHNOLOGY STACK</h3>
+            <div class="tech-pills-row">
+              @for (t of proj.technologies; track t) {
+                <span class="pill">{{ t }}</span>
+              }
+            </div>
+          </section>
+        </div>
+
+        <footer class="modal-footer">
+          @if (proj.githubUrl) {
+            <a [href]="proj.githubUrl" target="_blank" rel="noopener noreferrer" class="btn secondary">
+              VIEW GITHUB REPO &rarr;
+            </a>
+          }
+          @if (proj.liveUrl) {
+            <a [href]="proj.liveUrl" target="_blank" rel="noopener noreferrer" class="btn primary">
+              OPEN LIVE SYSTEM &rarr;
+            </a>
+          }
+          <button type="button" class="btn outline" (click)="selectedProject.set(null)">
+            CLOSE
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 9. SKILL CATEGORY MODAL                    -->
+  <!-- ========================================== -->
+  @if (selectedCategoryGroup(); as cat) {
+    <div class="modal-backdrop" (click)="selectedCategoryGroup.set(null)">
+      <div class="cyber-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <header class="modal-header" [style.border-color]="cat.color">
+          <div>
+            <span class="modal-tier" [style.color]="cat.color">SKILLS CONSTELLATION</span>
+            <h2>{{ cat.category }}</h2>
+            <p class="node-tech">{{ cat.tagline }}</p>
+          </div>
+          <button type="button" class="btn-close" (click)="selectedCategoryGroup.set(null)" aria-label="Close">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <div class="skills-detail-grid">
+            @for (s of cat.skills; track s.name) {
+              <div class="skill-detail-card">
+                <h4>{{ s.name }}</h4>
+                <p>{{ s.roleInStack }}</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <footer class="modal-footer">
+          <button type="button" class="btn primary" (click)="selectedCategoryGroup.set(null)">
+            CLOSE
+          </button>
+        </footer>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 10. INTERACTIVE TERMINAL EASTER EGG        -->
+  <!-- ========================================== -->
+  @if (terminalOpen()) {
+    <div class="terminal-overlay" (click)="closeTerminal()">
+      <div class="terminal-window" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <div class="terminal-titlebar">
+          <div class="titlebar-left">
+            <span class="dot red" (click)="closeTerminal()"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+            <span class="title-text">guest&#64;rishu-os: ~ (bash)</span>
+          </div>
+          <button type="button" class="btn-term-close" (click)="closeTerminal()">&times;</button>
+        </div>
+
+        <div #terminalBody class="terminal-body">
+          @for (entry of terminalHistory(); track $index) {
+            <div class="history-block" [ngClass]="entry.type || 'info'">
+              <div class="cmd-line">
+                <span class="prompt">guest&#64;rishu-os:~$</span>
+                <span class="cmd-text">{{ entry.command }}</span>
+              </div>
+              <div class="output-lines">
+                @for (line of entry.lines; track $index) {
+                  <div class="out-line">{{ line }}</div>
+                }
+              </div>
+            </div>
+          }
+
+          <form class="terminal-input-row" (ngSubmit)="handleTerminalSubmit()">
+            <label for="cli-input" class="prompt">guest&#64;rishu-os:~$</label>
+            <input
+              id="cli-input"
+              type="text"
+              name="termInput"
+              [(ngModel)]="terminalInput"
+              autocomplete="off"
+              autofocus
+              placeholder="type 'help', 'whoami', 'projects', or 'sudo rishu --deploy'..."
+            />
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 11. CONTACT GATEWAY MODAL                  -->
+  <!-- ========================================== -->
+  @if (contactModalOpen()) {
+    <div class="modal-backdrop" (click)="closeContactModal()">
+      <div class="cyber-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <header class="modal-header">
+          <div>
+            <span class="modal-tier">COMMUNICATIONS TERMINAL</span>
+            <h2>Get In Touch with Rishu</h2>
+            <p class="node-tech">Full Stack Developer &bull; Web, Mobile & Cloud Systems</p>
+          </div>
+          <button type="button" class="btn-close" (click)="closeContactModal()" aria-label="Close">&times;</button>
+        </header>
+
+        <div class="modal-body">
+          <div class="contact-links-grid">
+            <button type="button" class="contact-link-card" (click)="copyEmail()">
+              <span class="c-icon">✉️</span>
+              <span class="c-label">Email</span>
+              <span class="c-val">{{ profile.email }}</span>
+            </button>
+            <a [href]="profile.linkedin" target="_blank" rel="noopener noreferrer" class="contact-link-card">
+              <span class="c-icon">💼</span>
+              <span class="c-label">LinkedIn</span>
+              <span class="c-val">/in/rishu-katiyar-086757233</span>
+            </a>
+            <a [href]="profile.github" target="_blank" rel="noopener noreferrer" class="contact-link-card">
+              <span class="c-icon">🐙</span>
+              <span class="c-label">GitHub</span>
+              <span class="c-val">github.com/rishukatiyar001</span>
+            </a>
+            <a [href]="profile.website" target="_blank" rel="noopener noreferrer" class="contact-link-card">
+              <span class="c-icon">🌐</span>
+              <span class="c-label">Website</span>
+              <span class="c-val">{{ profile.websiteDisplay }}</span>
+            </a>
+          </div>
+
+          <form class="contact-form" (ngSubmit)="submitContactForm()">
+            <div class="form-group">
+              <label for="c-name">YOUR NAME</label>
+              <input id="c-name" type="text" [(ngModel)]="contactForm.name" name="name" required placeholder="Recruiter / Engineering Lead" />
+            </div>
+            <div class="form-group">
+              <label for="c-email">YOUR EMAIL</label>
+              <input id="c-email" type="email" [(ngModel)]="contactForm.email" name="email" required placeholder="name@company.com" />
+            </div>
+            <div class="form-group">
+              <label for="c-msg">MESSAGE / OPPORTUNITY</label>
+              <textarea id="c-msg" [(ngModel)]="contactForm.message" name="message" rows="4" required placeholder="Let's build something impactful together..."></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn primary">
+                SEND MESSAGE &rarr;
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================== -->
+  <!-- 12. TOAST NOTIFICATION BANNER              -->
+  <!-- ========================================== -->
+  @if (toastMessage(); as msg) {
+    <div class="toast-notification" role="status" aria-live="polite">
+      <span class="toast-dot"></span>
+      <span class="toast-text">{{ msg }}</span>
+    </div>
+  }
+
+</main>

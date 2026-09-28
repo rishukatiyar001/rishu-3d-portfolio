@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rishukatiyar.pp.ua/sitemap.xml
